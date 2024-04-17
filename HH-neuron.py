@@ -30,6 +30,10 @@ Cl_o      = 130.0*mM            # Extracellular chloride concentration
 # K_i_rest  = 140.0*mM            # Normal resting intracellular potassium concentration
 # Na_o_rest = 144.0*mM             # Normal resting extracellular sodium concentration
 
+Na_i = 10*mM
+K_o = 4*mM
+Ca_i = 0.1*uM
+
 # DYNAMIC VARIABLES
 # V     = 0 * mV             # Membrane potential (millivolts)
 # h     = 0                  # Inactivating sodium gate (dimensionless)
@@ -86,10 +90,11 @@ soma.dendrite.branch2 = Cylinder(length=10*um, diameter=1*um, n=3)
 
 neuron = SpatialNeuron(morphology=soma, model=eqn, method="exponential_euler", Cm=Cm, Ri=Rl)
 
-variables = ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i']
+# variables = ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i']
 
-for var in variables:
-    setattr(neuron, var, 0)
+#
+# for var in variables:
+#     setattr(neuron, var, 0)
 
 # neuron.v = 0*mV
 # neuron.h = 0.6

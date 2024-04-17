@@ -30,11 +30,28 @@ Na_i_rest = 18.0*mM             # Normal resting intracellular sodium concentrat
 K_i_rest  = 140.0*mM            # Normal resting intracellular potassium concentration
 Na_o_rest = 144.0*mM             # Normal resting extracellular sodium concentration
 
+alpha_K     = 0.94
+alpha_Na    = 1.0
+A_1         = 0.75
+B_1         = 0.92
+mu_1        = 2.6
+lamda_2     = 7.41
+sigma_2     = 1.0
+mu_2        = 2.6
+sigma_3     = 35.7
+mu_3        = 1.94
+lambda_3    = 24.3
+sigma_4     = 0.88
+mu_4        = 1.48
+lambda_4    = 24.6
+A_1Na       = 1.5
+A_1K        = 2.6
+Lambda_lK   = 32.5
 
 eqn = '''
-Im = INa + IK + ICl : amp/meter**2
-INa = -gNa*(m_inf**3)*h*(v-VNa)-gNaL(v-VNa) : amp/meter**2
-IK = -(gK*(n**4)+((gAHP*Ca_i)/(1+Ca_i)))*(v-VK)-gKL(v-VK) : amp/meter**2
+Im = INa_inf + IK_inf + ICl : amp/meter**2
+INa_inf = alpha_Na*(g1*g2*g3*g4 + g_1Na) : amp/meter**2
+IK_inf = alpha_K*(g1*g2*g3*g4 + g_1K) : amp/meter**2
 ICl = -gClL(v-VCl) : amp/meter**2
 
 dn/dt = rho*(alpha_n*(1-n) - beta_n*n) : Hz
@@ -62,6 +79,15 @@ alpha_n = 0.01*(v+34)/(1-exp(-0.1*(v+34))) : Hz
 beta_n = 0.125*exp(-(v+44)/80) : Hz
 alpha_h = 0.07*exp(-(v+44)/20) : Hz
 beta_h = 1/(1+exp(-0.1*(v+4))) : Hz
+
+K_oi = K_o/K_i : 1
+Na_io = Na_i/Na_o : 1
+g1 = 420.0*(1-A_1*(1-B_1*exp(-mu_1*Na_io))**(1/3)) : 1
+g2 = exp(sigma_2*(1-lambda_2*K_oi)/(1.0+exp(-mu_2*Na_io))) : 1
+g3 = 1/(1+exp(sigma_3*(1+mu_3*Na_io-lambda_3*K_oi)))**5 : 1
+g4 = 1/(1+exp(sigma_4*(1+mu_4*Na_io-lambda_4*K_oi)))**5 : 1
+g_1K = A_1K*exp(-lambda_1K*K_oi) : 1
+g_1Na = A_1Na : 1
 '''
 
 
