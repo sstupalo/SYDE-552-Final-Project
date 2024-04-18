@@ -72,17 +72,17 @@ variables = ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i']
 for var in variables:
     setattr(neuron, var, 0)
 
-neuron.v = -55*mV
-neuron.h = 0.6
-neuron.n = 0.3
-neuron.Na_i = 100*mM
-neuron.K_o = 20*mM
+neuron.v = 0*mV
+neuron.h = 0.8
+neuron.n = 0.2
+neuron.Na_i = 17*mM
+neuron.K_o = 7*mM
 neuron.Ca_i = 100*mM
 
 p = StateMonitor(neuron, ['v', 'h', 'n'], record=True)
 defaultclock.dt = 0.1*ms
 
-run(100*second)
+run(500*ms)
 # neuron.I[0] = 1*uA # current injection at one end of the axon
 # run(3*ms)
 # neuron.I = 0*uA
@@ -90,8 +90,8 @@ run(100*second)
 
 # plots here
 fig, ax = plt.subplots()
-ax.plot(p.t/ms, p.v[0]/mV)
-ax.set(xlabel='Time (ms)', ylabel='Voltage (mV)')
+ax.plot(p.t, p.v[0]/mV)
+ax.set(xlabel='Time (s)', ylabel='Voltage (mV)')
 title('Q3.1 Voltage vs. Time')
 plt.show()
 
