@@ -38,7 +38,7 @@ dn/dt = phi*(alpha_n*(1-n) - beta_n*n) : 1
 dh/dt = phi*(alpha_h*(1-h) - beta_h*h) : 1
 dCa_i/dt = (-0.002*gCa*(v-VCa)/(1+exp(-(v/mV+25)/2.5)))*mmol/(meter*ucoulomb)-(Ca_i/80)/second : mmolar
 
-dK_o/dt = 0.33*IK*mmol/(meter*ucoulomb) - 2*beta*Ipump - Iglia - Idiff : mmolar
+dK_o/dt = 0.33*((mM*cm**2)/ucoulomb)*IK - 2*beta*Ipump - Iglia - Idiff : mmolar
 Ipump = (rho/(1+exp((25-Na_i/mM)/3)))*(1/(1+exp(5.5-K_o/mM))) :  mmolar/second
 Iglia = Gglia/(1+exp((18-K_o/mM)/2.5)) :  mmolar/second
 Idiff = epsilon*(K_o-k_o_inf) :  mmolar/second
@@ -48,7 +48,7 @@ dNa_i/dt = (0.33*INa*mmol/(meter*ucoulomb))/beta-3*Ipump :  mmolar
 Na_o = 144.0*mM-beta*(Na_i-18.0*mM) : mmolar  
 
 VNa = 26.64*log(abs(Na_o/Na_i))*mV : volt
-VK = 26.64*log(K_o/K_i)*mV : volt
+VK = 26.64*log(abs(K_o/K_i))*mV : volt
 VCl = 26.64*log(Cl_i/Cl_o)*mV : volt
 
 m_inf = alpha_m/(alpha_m+beta_m) : 1
@@ -60,12 +60,13 @@ alpha_h = 0.07*exp(-(v/mV+44)/20) : 1
 beta_h = 1/(1+exp(-0.1*(v/mV+4))) : 1
 '''
 
-
 prefs.codegen.target = 'numpy'
 prefs.codegen.loop_invariant_optimisations = False
 np.seterr(all='raise')
 
+
 neuron = NeuronGroup(1, eqn, method='euler')
+
 
 variables = ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i']
 
@@ -79,26 +80,23 @@ neuron.Na_i = 17*mM
 neuron.K_o = 7*mM
 neuron.Ca_i = 100*mM
 
-p = StateMonitor(neuron, ['v', 'h', 'n'], record=True)
-defaultclock.dt = 0.1*ms
+p = StateMonitor(neuron, ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i'], record=True)
+defaultclock.dt = 0.001*ms
 
 run(500*ms)
-# neuron.I[0] = 1*uA # current injection at one end of the axon
-# run(3*ms)
-# neuron.I = 0*uA
-# run(10*ms)
 
-# plots here
+
 fig, ax = plt.subplots()
 ax.plot(p.t, p.v[0]/mV)
 ax.set(xlabel='Time (s)', ylabel='Voltage (mV)')
-title('Q3.1 Voltage vs. Time')
+title('')
 plt.show()
 
-# fig, ax = plt.subplots()
-# ax.plot(p.t/ms, (p.n[0]/max(p.n[0])), label = 'n')
-# ax.plot(p.t/ms, (p.h[0]/max(p.h[0])), label = 'h')
-# ax.set(xlabel='Time (ms)', ylabel='Voltage (mV)')
-# title('Q3.1 Normalized m, n, and h vs. Time')
-# ax.legend(loc='lower right')
-# plt.show()
+fig, ax = plt.subplots()
+ax.plot(p.t, p.Na_i[0]/mM, label = '[Na]_i')
+ax.plot(p.t, p.K_o[0]/mM, label = '[K]_o')
+# ax.plot(p.t, p.Ca_i[0], label = '[Ca]_i')
+ax.set(xlabel='Time (ms)', ylabel='Concentration (mM)')
+title('')
+ax.legend()
+plt.show()
