@@ -65,7 +65,7 @@ prefs.codegen.loop_invariant_optimisations = False
 np.seterr(all='raise')
 
 
-neuron = NeuronGroup(1, eqn, method='euler')
+neuron = NeuronGroup(1, eqn, method='rk4')
 
 
 variables = ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i']
@@ -73,17 +73,17 @@ variables = ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i']
 for var in variables:
     setattr(neuron, var, 0)
 
-neuron.v = 0*mV
-neuron.h = 0.8
-neuron.n = 0.2
-neuron.Na_i = 17*mM
-neuron.K_o = 7*mM
-neuron.Ca_i = 100*mM
+neuron.v = -50*mV
+neuron.h = 0.08553
+neuron.n = 0.96859
+neuron.Na_i = 15.5*mM
+neuron.K_o = 7.8*mM
+neuron.Ca_i = 0.0*mM
 
 p = StateMonitor(neuron, ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i'], record=True)
-defaultclock.dt = 0.001*ms
+defaultclock.dt = 0.01*ms
 
-run(500*ms)
+run(20*second)
 
 
 fig, ax = plt.subplots()
@@ -96,7 +96,7 @@ fig, ax = plt.subplots()
 ax.plot(p.t, p.Na_i[0]/mM, label = '[Na]_i')
 ax.plot(p.t, p.K_o[0]/mM, label = '[K]_o')
 # ax.plot(p.t, p.Ca_i[0], label = '[Ca]_i')
-ax.set(xlabel='Time (ms)', ylabel='Concentration (mM)')
+ax.set(xlabel='Time (s)', ylabel='Concentration (mM)')
 title('')
 ax.legend()
 plt.show()
