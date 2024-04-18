@@ -47,7 +47,7 @@ K_i = 140.0*mM+(18.0*mM-Na_i) : mmolar
 dNa_i/dt = (0.33*INa*mmol/(meter*ucoulomb))/beta-3*Ipump :  mmolar
 Na_o = 144.0*mM-beta*(Na_i-18.0*mM) : mmolar  
 
-VNa = 26.64*log(Na_o/Na_i)*mV : volt
+VNa = 26.64*log(abs(Na_o/Na_i))*mV : volt
 VK = 26.64*log(K_o/K_i)*mV : volt
 VCl = 26.64*log(Cl_i/Cl_o)*mV : volt
 
@@ -65,14 +65,14 @@ prefs.codegen.target = 'numpy'
 prefs.codegen.loop_invariant_optimisations = False
 np.seterr(all='raise')
 
-neuron = NeuronGroup(1, eqn, method='eurler')
+neuron = NeuronGroup(1, eqn, method='euler')
 
 variables = ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i']
 
 for var in variables:
     setattr(neuron, var, 0)
 
-neuron.v = -5*mV
+neuron.v = -55*mV
 neuron.h = 0.6
 neuron.n = 0.3
 neuron.Na_i = 100*mM
@@ -80,20 +80,20 @@ neuron.K_o = 20*mM
 neuron.Ca_i = 100*mM
 
 p = StateMonitor(neuron, ['v', 'h', 'n'], record=True)
-defaultclock.dt = 0.001*ms
+defaultclock.dt = 0.1*ms
 
-run(1*ms)
+run(100*second)
 # neuron.I[0] = 1*uA # current injection at one end of the axon
 # run(3*ms)
 # neuron.I = 0*uA
 # run(10*ms)
 
-# # plots here
-# fig, ax = plt.subplots()
-# ax.plot(p.t/ms, p.v[0]/mV)
-# ax.set(xlabel='Time (ms)', ylabel='Voltage (mV)')
-# title('Q3.1 Voltage vs. Time')
-# plt.show()
+# plots here
+fig, ax = plt.subplots()
+ax.plot(p.t/ms, p.v[0]/mV)
+ax.set(xlabel='Time (ms)', ylabel='Voltage (mV)')
+title('Q3.1 Voltage vs. Time')
+plt.show()
 
 # fig, ax = plt.subplots()
 # ax.plot(p.t/ms, (p.n[0]/max(p.n[0])), label = 'n')
