@@ -19,12 +19,12 @@ VCl       = -81.93*mV           # Reversal potential of chloride current
 gCa       = 0.1*mS/meter**2     # Calcium conductance
 VCa       = 120*mV              # Reversal potential of calcium
 beta      = 7.0                 # Ratio of intracellular to extracellular volume of the cell
-rho       = 1.25*mM/second  # Pump strength
-Gglia     = 66*mM/second    # Strength of glial uptake
+rho       = 1.25*mM/second      # Pump strength
+Gglia     = 66*mM/second        # Strength of glial uptake
 epsilon   = 1.2*Hz              # Diffusion constant
-k_o_inf   = 4.0*mM          # Steady state extracellular potassium concentration
-Cl_i      = 6.0*mM          # Intracellular chloride concentration
-Cl_o      = 130.0*mM        # Extracellular chloride concentration
+k_o_inf   = 4.0*mM              # Steady state extracellular potassium concentration
+Cl_i      = 6.0*mM              # Intracellular chloride concentration
+Cl_o      = 130.0*mM            # Extracellular chloride concentration
 
 
 # HH EQUATIONS
@@ -65,14 +65,14 @@ prefs.codegen.target = 'numpy'
 prefs.codegen.loop_invariant_optimisations = False
 np.seterr(all='raise')
 
-neuron = NeuronGroup(1, eqn, method='euler')
+neuron = NeuronGroup(1, eqn, method='eurler')
 
 variables = ['v', 'h', 'n', 'Na_i', 'K_o', 'Ca_i']
 
 for var in variables:
     setattr(neuron, var, 0)
 
-neuron.v = -55*mV
+neuron.v = -5*mV
 neuron.h = 0.6
 neuron.n = 0.3
 neuron.Na_i = 100*mM
