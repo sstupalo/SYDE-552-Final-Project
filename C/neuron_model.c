@@ -15,7 +15,7 @@ void rk4(double[], double[], int, double, double, double[],
 double alpha_n, alpha_m, alpha_h, beta_n, beta_m, beta_h, m_inf,
 	Kin, Naout, E_k, E_na, E_cl, E_ca, Ina, Ik, Icl, Itildepump, Itildeglia, Itildediffusion,
 	Cm, g_na, g_naL, g_k, g_kL, g_ahp, g_clL, g_ca, gamma_val, beta, tau, phi,
-	rho, glia, epsilon, kbath;
+	rho, glia, epsilon, kbath, I_ext;
 
 int main(void)
 {
@@ -25,7 +25,10 @@ int main(void)
 
 	printf("Integrate for how many seconds? ");
 	scanf("%ld", &seconds);
-
+	// printf("Enter the value of external current (I_ext): ");
+	// scanf("%lf", &I_ext); // User input for external current
+	I_ext = 50;
+	
 	/*
 	y[1]=V, the membrane voltage
 	y[2]=n, gating variable
@@ -41,7 +44,7 @@ int main(void)
 	y[1] = -50;
 	y[2] = 0.08553;
 	y[3] = 0.96859;
-	y[4] = 7.8;
+	y[4] = 4.4;
 	y[5] = 15.5;
 	y[6] = 0.0;
 
@@ -54,7 +57,7 @@ int main(void)
 	rho = 1.25;
 	glia = 200.0 / 3.0;
 	epsilon = 4.0 / 3.0;
-	kbath = 8.0;
+	kbath = 4.4;
 
 	E_cl = 26.64 * log(6.0 / 130.0);
 	E_ca = 120.0;
@@ -86,11 +89,14 @@ int main(void)
 	time = 0.0;
 
 	fp = fopen("datafile.dat", "w");
-	fprintf(fp, "%lf %lf %lf %lf\n", time / 1000.0, y[1], y[4], y[5]);
-	/* fprintf(fp, "%lf %lf %lf %lf %lf %lf %lf\n", time, y[1], y[2], y[3], y[4], y[5], y[6]); */
+	// fprintf(fp, "%lf %lf %lf %lf\n", time / 1000.0, y[1], y[4], y[5]);
+	fprintf(fp, "%lf %lf %lf %lf %lf\n", time, y[1], y[4], y[5], y[6]);
 
 	for (i = 1; i <= (totalsteps / skip); i++)
 	{
+		if (i == 30) {
+			I_ext = 0;
+		}
 
 		for (j = 1; j <= skip; j++)
 		{
@@ -99,8 +105,8 @@ int main(void)
 			time = time + timestep;
 		}
 
-		fprintf(fp, "%lf %lf %lf %lf\n", time / 1000.0, y[1], y[4], y[5]);
-		/* fprintf(fp, "%lf %lf %lf %lf %lf %lf %lf\n", time, y[1], y[2], y[3], y[4], y[5], y[6]); */
+		// fprintf(fp, "%lf %lf %lf %lf\n", time / 1000.0, y[1], y[4], y[5]);
+		fprintf(fp, "%lf %lf %lf %lf %lf\n", time, y[1], y[4], y[5], y[6]);
 		fflush(fp);
 	}
 
@@ -146,7 +152,7 @@ void FullModel(double x, double y[], double dydx[])
 	y[5]=[Na]_i, the intracellular sodium concentration
 	y[6]=[Ca], the calcium concentration
 	*/
-	dydx[1] = (1.0 / Cm) * (-Ina - Ik - Icl);
+	dydx[1] = (1.0 / Cm) * (-Ina - Ik - Icl + I_ext);
 	dydx[2] = phi * (alpha_n * (1 - y[2]) - beta_n * y[2]);
 	dydx[3] = phi * (alpha_h * (1 - y[3]) - beta_h * y[3]);
 	dydx[4] = (1 / tau) * (gamma_val * beta * Ik - 2.0 * beta * Itildepump - Itildeglia - Itildediffusion);
