@@ -11,7 +11,7 @@ const double TWOPI = 6.28318520717958647692;
 void FullModel(double x, double y[], double dydx[]);
 void rk4(double[], double[], int, double, double, double[],
 		 void (*derivs)(double, double[], double[]));
-void run_HH_model(int seconds, double K_o, double pH);  
+void run_HH_model(int seconds, double K_o, double pH, int current);  
 double initial_K(double pH);      
 
 /* Global variables */
@@ -35,7 +35,7 @@ int main(void)
 
     for (int i = 0; i < length; i++) {
         K_o = initial_K(pH_vals[i]);
-        run_HH_model(seconds, K_o, pH_vals[i]);
+        run_HH_model(seconds, K_o, pH_vals[i], 200);
     }
 
     return 0;
@@ -51,13 +51,13 @@ double initial_K(double pH){
     return K_o;
 }
 
-void run_HH_model(int seconds, double K_o, double pH){
+void run_HH_model(int seconds, double K_o, double pH, int current){
 
     int i, j, totalsteps, skip;
 	double *y, *derivs, time, timestep;
 	FILE *fp;
 
-	I_ext = 50;
+	I_ext = current;
 	
 	/*
 	y[1]=V, the membrane voltage
