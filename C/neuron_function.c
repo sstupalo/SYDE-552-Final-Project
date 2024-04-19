@@ -2,6 +2,7 @@
 #include <stdlib.h> /* for the rand function */
 #include <math.h>
 #include "nrutil.h"
+#define MAX_FILENAME_LENGTH 100
 
 const double PIOVERTWO = 1.57079632679489661923;
 const double PI = 3.14159265358979323846;
@@ -10,7 +11,8 @@ const double TWOPI = 6.28318520717958647692;
 void FullModel(double x, double y[], double dydx[]);
 void rk4(double[], double[], int, double, double, double[],
 		 void (*derivs)(double, double[], double[]));
-void run_HH_model(int seconds, double pH);        
+void run_HH_model(int seconds, double K_o, double pH);  
+double initial_K(double pH);      
 
 /* Global variables */
 double alpha_n, alpha_m, alpha_h, beta_n, beta_m, beta_h, m_inf,
@@ -21,20 +23,36 @@ double alpha_n, alpha_m, alpha_h, beta_n, beta_m, beta_h, m_inf,
 int main(void)
 {
     int seconds;
-    double pH;
+    double pH, K_o;
+    double pH_vals[] = {7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7};
 
 	printf("Integrate for how many seconds? ");
 	scanf("%ld", &seconds);
 
-    pH = 7.4;
+    system("mkdir results");
 
-    run_HH_model(seconds, pH);
+    int length = sizeof(pH_vals) / sizeof(pH_vals[0]);
+
+    for (int i = 0; i < length; i++) {
+        K_o = initial_K(pH_vals[i]);
+        run_HH_model(seconds, K_o, pH_vals[i]);
+    }
 
     return 0;
 }
 
-void run_HH_model(int seconds, double pH){
-    
+double initial_K(double pH){
+    double K_o;
+    double K_o_initial = 4.0;
+    double pH_initial = 7.4;
+
+    K_o = K_o_initial + (pH_initial - pH)*6.0;
+
+    return K_o;
+}
+
+void run_HH_model(int seconds, double K_o, double pH){
+
     int i, j, totalsteps, skip;
 	double *y, *derivs, time, timestep;
 	FILE *fp;
@@ -56,7 +74,7 @@ void run_HH_model(int seconds, double pH){
 	y[1] = -50;
 	y[2] = 0.08553;
 	y[3] = 0.96859;
-	y[4] = 4.4;
+	y[4] = K_o;
 	y[5] = 15.5;
 	y[6] = 0.0;
 
@@ -69,7 +87,7 @@ void run_HH_model(int seconds, double pH){
 	rho = 1.25;
 	glia = 200.0 / 3.0;
 	epsilon = 4.0 / 3.0;
-	kbath = 4.4;
+	kbath = K_o;
 
 	E_cl = 26.64 * log(6.0 / 130.0);
 	E_ca = 120.0;
@@ -100,7 +118,10 @@ void run_HH_model(int seconds, double pH){
 
 	time = 0.0;
 
-	fp = fopen("datafile.dat", "w");
+    char filename[MAX_FILENAME_LENGTH];
+    snprintf(filename, MAX_FILENAME_LENGTH, "results/datafile_%.1f.dat", pH);
+
+	fp = fopen(filename, "w");
 	fprintf(fp, "%lf %lf %lf %lf\n", time / 1000.0, y[1], y[4], y[5]);
 	
 	for (i = 1; i <= (totalsteps / skip); i++)

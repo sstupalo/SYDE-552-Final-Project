@@ -1,45 +1,54 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Load data from datafile.dat
-data = np.loadtxt('datafile.dat')
+pH_vals = [7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7]
 
-# Extract columns
-time = data[:, 0]
-voltage = data[:, 1]
-potassium_concentration = data[:, 2]
-sodium_concentration = data[:, 3]
+for pH in pH_vals:
+    # Construct the file name dynamically
+    filename = f"results/datafile_{pH}.dat"
 
-# Plot the voltage data
-plt.figure(figsize=(10, 6))
-plt.plot(time/1000, voltage, label='Voltage', color='blue')
-plt.xlabel('Time (s)')
-plt.ylabel('Voltage')
-plt.title('Voltage vs Time')
-plt.legend()
-plt.grid(True)
-plt.show()
+    # Load data from datafile.dat
+    data = np.loadtxt(filename)
 
-# Create a figure and axis object
-fig, ax1 = plt.subplots(figsize=(10, 6))
+    # # Load data from datafile.dat
+    # data = np.loadtxt('datafile.dat')
 
-# Plot the potassium concentration data
-ax1.plot(time/1000, potassium_concentration, label='Potassium Concentration', color='green')
-ax1.set_xlabel('Time (s)')
-ax1.set_ylabel('Potassium Concentration (mM)', color='green')
-ax1.tick_params(axis='y', labelcolor='green')
-ax1.grid(True)
+    # Extract columns
+    time = data[:, 0]
+    voltage = data[:, 1]
+    potassium_concentration = data[:, 2]
+    sodium_concentration = data[:, 3]
 
-# Create a secondary y-axis for sodium concentration
-ax2 = ax1.twinx()
-ax2.plot(time/1000, sodium_concentration, label='Sodium Concentration', color='red')
-ax2.set_ylabel('Sodium Concentration (mM)', color='red')
-ax2.tick_params(axis='y', labelcolor='red')
+    # Plot the voltage data
+    plt.figure(figsize=(10, 6))
+    plt.plot(time/1000, voltage, label='Voltage', color='blue')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Voltage')
+    plt.title('Voltage vs Time')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
-# Add legends
-lines, labels = ax1.get_legend_handles_labels()
-lines2, labels2 = ax2.get_legend_handles_labels()
-ax2.legend(lines + lines2, labels + labels2)
+    # Create a figure and axis object
+    fig, ax1 = plt.subplots(figsize=(10, 6))
 
-plt.title('Concentration vs Time')
-plt.show()
+    # Plot the potassium concentration data
+    ax1.plot(time/1000, potassium_concentration, label='Potassium Concentration', color='green')
+    ax1.set_xlabel('Time (s)')
+    ax1.set_ylabel('Potassium Concentration (mM)', color='green')
+    ax1.tick_params(axis='y', labelcolor='green')
+    ax1.grid(True)
+
+    # Create a secondary y-axis for sodium concentration
+    ax2 = ax1.twinx()
+    ax2.plot(time/1000, sodium_concentration, label='Sodium Concentration', color='red')
+    ax2.set_ylabel('Sodium Concentration (mM)', color='red')
+    ax2.tick_params(axis='y', labelcolor='red')
+
+    # Add legends
+    lines, labels = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax2.legend(lines + lines2, labels + labels2)
+
+    plt.title('Concentration vs Time')
+    plt.show()
