@@ -10,6 +10,7 @@ const double TWOPI = 6.28318520717958647692;
 void FullModel(double x, double y[], double dydx[]);
 void rk4(double[], double[], int, double, double, double[],
 		 void (*derivs)(double, double[], double[]));
+void run_HH_model(int seconds, double pH);        
 
 /* Global variables */
 double alpha_n, alpha_m, alpha_h, beta_n, beta_m, beta_h, m_inf,
@@ -19,14 +20,25 @@ double alpha_n, alpha_m, alpha_h, beta_n, beta_m, beta_h, m_inf,
 
 int main(void)
 {
-	int i, j, seconds, totalsteps, skip;
-	double *y, *derivs, time, timestep;
-	FILE *fp;
+    int seconds;
+    double pH;
 
 	printf("Integrate for how many seconds? ");
 	scanf("%ld", &seconds);
-	// printf("Enter the value of external current (I_ext): ");
-	// scanf("%lf", &I_ext); // User input for external current
+
+    pH = 7.4;
+
+    run_HH_model(seconds, pH);
+
+    return 0;
+}
+
+void run_HH_model(int seconds, double pH){
+    
+    int i, j, totalsteps, skip;
+	double *y, *derivs, time, timestep;
+	FILE *fp;
+
 	I_ext = 50;
 	
 	/*
@@ -111,10 +123,8 @@ int main(void)
 	fclose(fp);
 
 	printf("Done!\n");
-
-	return 0;
 }
-
+	
 /*****/
 
 void FullModel(double x, double y[], double dydx[])

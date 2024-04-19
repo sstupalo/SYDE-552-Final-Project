@@ -9,7 +9,6 @@ time = data[:, 0]
 voltage = data[:, 1]
 potassium_concentration = data[:, 2]
 sodium_concentration = data[:, 3]
-calcium_concentration = data[:, 4]
 
 # Plot the voltage data
 plt.figure(figsize=(10, 6))
